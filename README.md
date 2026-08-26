@@ -10,34 +10,34 @@ defined by a pre-test-fixed India VIX threshold.
 ## What this repository shows
 
 Reported effects in regime-conditional financial machine learning are
-frequently sensitive to two silent methodological choices: how the regime
-threshold is calibrated, and how overlapping-horizon labels are handled in
-significance testing. This repository documents both problems being found
-and fixed in a real analysis, and reports the corrected result honestly even
-where it weakens the original hypothesis:
+frequently sensitive to two easily overlooked methodological choices: how
+the regime threshold is calibrated, and how overlapping-horizon labels are
+handled in significance testing. This pipeline treats both as first-class
+design decisions and quantifies their impact directly:
 
-- **Look-ahead bias in the regime threshold.** Defining "High-VIX" using the
-  75th percentile of the *test-period* VIX distribution (not knowable in
-  real time) versus a threshold calibrated from **pre-test data only**
-  changes the High-VIX sample from 56 days to 8 days, and changes the
-  measured effect from apparently strong to statistically inconclusive.
+- **Threshold calibration.** Defining "High-VIX" using the 75th percentile
+  of the *test-period* VIX distribution (not knowable in real time) versus a
+  threshold calibrated from **pre-test data only** changes the High-VIX
+  sample from 56 days to 8 days, and changes the measured effect from
+  apparently strong to statistically inconclusive — a concrete illustration
+  of how much a single calibration choice can drive an apparent result.
 - **Dependence in overlapping labels.** The prediction target is a 21-day-
   ahead direction label, so consecutive observations share up to 20
   overlapping future days. Naive significance testing on this kind of data
-  inflates apparent significance; a non-overlapping Fisher test, block
-  bootstrap, and block-permutation test (see `notebooks/NB-R04`) tell a
-  more conservative story.
+  inflates apparent significance; this pipeline instead uses a
+  non-overlapping Fisher test, block bootstrap, and block-permutation test
+  (see `notebooks/NB-R04`) throughout.
 - **Generalizability.** A year-by-year walk-forward evaluation
   (`notebooks/NB-R05`) shows the High-VIX accuracy advantage holding in only
   one of six independently evaluated years — direct evidence that a result
   measured on a single test window can be specific to that window's
   particular stress episode rather than a general, repeatable effect.
 
-The honest conclusion of this pipeline, after every correction, is that the
-data support a **conditional, sample-constrained pattern** worth further
-investigation — not an established, generalizable regime effect or a
-validated trading edge. The repository is structured so that every number in
-that conclusion is traceable to a specific, reproducible computation.
+The conclusion supported by this analysis is that the data show a
+**conditional, sample-constrained pattern** worth further investigation —
+not an established, generalizable regime effect or a validated trading
+edge. The repository is structured so that every number behind that
+conclusion is traceable to a specific, reproducible computation.
 
 ## Repository structure
 
@@ -62,8 +62,8 @@ that conclusion is traceable to a specific, reproducible computation.
 ## Reproducing the analysis
 
 ```bash
-git clone <this-repo-url>
-cd India-VIX-Major-Revision
+git clone <repository-url> bank-nifty-vix-regime
+cd bank-nifty-vix-regime
 pip install -r requirements.txt
 ```
 

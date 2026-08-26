@@ -18,11 +18,11 @@ notebooks are numbered in the order they must be run — each depends on artifac
 | 06 | `NB-R06_baseline_comparison.ipynb` | Regime-stratified comparison against simple baselines |
 | 07 | `NB-R07_shap_regime_analysis.ipynb` | SHAP feature importance, computed separately per regime |
 | 08 | `NB-R08_ablation_studies.ipynb` | Per-component ablation of the stacking ensemble |
-| 09 | `NB-R09_corrected_trading_simulation.ipynb` | Deployable trading-rule simulation with explicit execution and Sharpe conventions |
+| 09 | `NB-R09_trading_simulation.ipynb` | Deployable trading-rule simulation with explicit execution and Sharpe conventions |
 | 10 | `NB-R10_results_compilation.ipynb` | Compile all outputs into summary tables |
 | 11 | `NB-R11_garch_and_threshold_extras.ipynb` | GARCH(1,1) regime comparison; extended threshold sensitivity |
 | 12 | `NB-R12_train_1d_5d_models.ipynb` | Train real 1-day and 5-day stacking ensembles (same methodology as NB-R03) |
-| 13 | `NB-R13_regenerate_figures.ipynb` | Regenerate figures directly from corrected result files (depends on NB-R12's output) |
+| 13 | `NB-R13_regenerate_figures.ipynb` | Regenerate figures directly from pipeline result files (depends on NB-R12's output) |
 
 ## Reproducing the pipeline
 
@@ -51,7 +51,7 @@ kept only for audit-trail transparency.
 - Every notebook's markdown documents its exact inputs, outputs, and the specific
   methodological issue it addresses, where relevant.
 - NB-R13 depends on NB-R12's output: its regime-accuracy and AUC figures load the
-  1-day/5-day results directly from `results/horizon_1d_5d_results_CORRECTED.csv`
+  1-day/5-day results directly from `results/horizon_1d_5d_results.csv`
   and `data/processed/test_predictions_{1d,5d}.csv` rather than using hardcoded
   values, so run NB-R12 before NB-R13 (or before rerunning NB-R13) if those files
   don't yet exist.
