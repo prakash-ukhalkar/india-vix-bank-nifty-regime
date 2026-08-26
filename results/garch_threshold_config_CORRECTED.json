@@ -1,0 +1,14 @@
+{
+  "garch_high_threshold": 1.385072055979444,
+  "garch_fit_converged": true,
+  "n_vix_high": 8,
+  "n_garch_high": 10,
+  "n_intersect": 2,
+  "p75_threshold_check": 18.709999084472656,
+  "p85_threshold": 21.00100002288818,
+  "p85_n": 4,
+  "quarterly_high_vix_counts": {
+    "2025Q2": 8
+  },
+  "p1_replication_row": "DROPPED -- no independently-trained second pipeline artifact found in project; not fabricated. Add back only if a genuine P1 run is produced."
+}
