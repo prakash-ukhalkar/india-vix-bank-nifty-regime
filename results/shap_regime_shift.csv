@@ -1,0 +1,17 @@
+,shap_diff_high_minus_low
+bb_upper,0.05523768
+macd,0.022098444
+macd_signal,0.021179292
+ema20,0.012667432
+log_ret_lag3,0.0007361281
+log_ret_lag5,0.00061641936
+stoch_k,0.00036695972
+log_ret_lag1,-0.0004701413
+log_ret_lag2,-0.00047950493
+roc10,-0.0025422256
+macd_hist,-0.00404846
+stoch_d,-0.008425208
+rsi14,-0.009299923
+bb_lower,-0.01370769
+bb_width,-0.067798644
+atr14,-0.19297424

@@ -1,0 +1,5 @@
+Method,Threshold,High-VIX days
+Original (test p75) [BIASED],15.08,56
+Fixed train+val p75 [PRIMARY],18.709999084472656,8
+Expanding window p75,Dynamic,8
+Rolling 252d p75,Dynamic,52

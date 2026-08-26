@@ -1,0 +1,18 @@
+[
+  "macd",
+  "macd_signal",
+  "macd_hist",
+  "ema20",
+  "rsi14",
+  "stoch_k",
+  "stoch_d",
+  "roc10",
+  "bb_upper",
+  "bb_lower",
+  "bb_width",
+  "atr14",
+  "log_ret_lag1",
+  "log_ret_lag2",
+  "log_ret_lag3",
+  "log_ret_lag5"
+]

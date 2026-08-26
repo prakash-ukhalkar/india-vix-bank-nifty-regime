@@ -1,0 +1,17 @@
+feature,mean_abs_shap
+bb_upper,0.39375165
+bb_lower,0.09414795
+macd_signal,0.059901677
+ema20,0.0594298
+macd,0.039382692
+stoch_d,0.024879636
+bb_width,0.023261279
+atr14,0.019270893
+macd_hist,0.012315056
+roc10,0.009652995
+stoch_k,0.008470719
+rsi14,0.0037733954
+log_ret_lag5,0.0029213019
+log_ret_lag2,0.0025462802
+log_ret_lag3,0.0021888802
+log_ret_lag1,0.0012759655

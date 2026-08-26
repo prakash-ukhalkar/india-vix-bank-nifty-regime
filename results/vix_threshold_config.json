@@ -1,0 +1,7 @@
+{
+  "vix_threshold_fixed": 18.709999084472656,
+  "vix_threshold_original_biased": 15.08,
+  "threshold_source": "train+val p75",
+  "high_vix_days_fixed": 8,
+  "high_vix_days_original": 56
+}

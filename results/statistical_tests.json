@@ -1,0 +1,49 @@
+{
+  "high_vix": {
+    "n": 8,
+    "up_pct": 100.0,
+    "majority_baseline_acc": 100.0,
+    "accuracy": 100.0,
+    "precision": 100.0,
+    "recall": 100.0,
+    "f1": 100.0,
+    "auc": NaN,
+    "confusion_matrix": [
+      [
+        8
+      ]
+    ]
+  },
+  "low_vix": {
+    "n": 248,
+    "up_pct": 70.16129032258065,
+    "majority_baseline_acc": 70.16129032258065,
+    "accuracy": 66.53225806451613,
+    "precision": 69.36170212765957,
+    "recall": 93.67816091954023,
+    "f1": 79.70660146699267,
+    "auc": 0.5837993165579373,
+    "confusion_matrix": [
+      [
+        2,
+        72
+      ],
+      [
+        11,
+        163
+      ]
+    ]
+  },
+  "accuracy_diff_pp": 33.46774193548387,
+  "fisher_non_overlap_p": 1.0,
+  "fisher_bonferroni_p": 1.0,
+  "block_boot_ci_95": [
+    16.249999999999996,
+    51.42770387507228
+  ],
+  "block_perm_p": 0.3566,
+  "block_perm_bonferroni_p": 1.0,
+  "majority_baseline_overall": 71.09375,
+  "stack_overall_acc": 67.578125,
+  "stack_overall_auc": 0.581972081972082
+}

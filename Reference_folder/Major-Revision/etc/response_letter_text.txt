@@ -1,0 +1,158 @@
+P[0]: Response to Reviewers
+P[1]: Manuscript ID: NCAA-D-26-02775
+P[2]: Title: India VIX Regime-Conditional Directional Prediction of Bank Nifty: A Stacking Ensemble Approach
+P[3]: Journal: Neural Computing and Applications
+P[5]: Dear Editor and Reviewers,
+P[6]: We sincerely thank the Editor and all Reviewers for the detailed and constructive feedback. We have substantially revised the analysis pipeline and manuscript to address concerns on leakage, look-ahead bias, overlapping outcomes, regime concentration, baseline benchmarking, trading-protocol clarity, and reporting transparency. Where corrected analyses did not support our earlier claims, we have revised the manuscript narrative conservatively and explicitly.
+P[7]: Below we provide a point-by-point response.
+P[8]: Reviewer 1
+P[9]: R1.1 Threshold look-ahead bias
+P[10]: Reviewer comment: High-VIX threshold was previously estimated from the test-period distribution.
+P[11]: Response: Accepted. We recalibrated the primary regime threshold using only pre-test data (train+validation), eliminating this look-ahead pathway.
+P[12]: Changes made:
+P[13]: Primary threshold set to p75 of train+validation VIX (18.71).
+P[14]: Regime partition recomputed under fixed pre-test threshold.
+P[15]: Expanding and rolling threshold sensitivity also reported.
+P[16]: Location in revised manuscript:
+P[17]: Revised manuscript: Section 3.4 (regime definition and threshold calibration), Section 6.3 (threshold sensitivity), and the threshold-comparison table.
+P[18]: Revised manuscript: Section 6.3 (threshold sensitivity analysis) and the threshold-comparison table.
+P[19]: R1.2 Overlap dependence in inference
+P[20]: Reviewer comment: The 21-day horizon induces overlap and serial dependence, invalidating independent and identically distributed (i.i.d.) inference.
+P[21]: Response: Accepted. We replaced independent and identically distributed (i.i.d.)-style inference with dependence-aware procedures.
+P[22]: Changes made:
+P[23]: Non-overlapping Fisher test (every 21st observation).
+P[24]: Circular block bootstrap CI (block length 21).
+P[25]: Block-permutation testing with multiplicity-aware interpretation.
+P[26]: Location in revised manuscript:
+P[27]: Revised manuscript: Section 6.3 (dependence-aware inference), corresponding statistical-test table, and Fig. 9.
+P[28]: Revised manuscript: Section 6.3 (dependence-aware statistical testing) and corresponding statistical-test table.
+P[29]: R1.3 Generalizability from single stress episode
+P[30]: Reviewer comment: High-VIX concentration in one episode may make findings event-specific.
+P[31]: Response: Accepted. We added walk-forward yearly evaluation across independent historical windows and tempered generalization claims.
+P[32]: Changes made:
+P[33]: Year-wise High-VIX vs Low-VIX accuracy comparison added.
+P[34]: Manuscript now explicitly states limited cross-period generalizability in the current sample.
+P[35]: Location in revised manuscript:
+P[36]: Revised manuscript: Section 6.4 (walk-forward/generalizability discussion) and corresponding walk-forward results table/figure.
+P[37]: Revised manuscript: walk-forward results figure in the Results section (generalizability analysis).
+P[38]: R1.4 Sharpe claim inconsistency at 50 bps
+P[39]: Reviewer comment: Text previously overstated Sharpe superiority versus buy-and-hold.
+P[40]: Response: Accepted and corrected. We rebuilt the trading simulation and aligned text to corrected outputs.
+P[41]: Changes made:
+P[42]: Protocol-consistent simulation with non-overlap and proper cost conversion.
+P[43]: Corrected statement: strategy Sharpe does not exceed buy-and-hold at tested costs.
+P[44]: Location in revised manuscript:
+P[45]: Revised manuscript: Section 5.3 (trading interpretation), transaction-cost sensitivity table, and associated trading-performance figure.
+P[46]: Revised manuscript: Section 5.3 (signal timing, execution protocol, and trading-evaluation assumptions).
+P[47]: R1.5 Signal timing and execution ambiguity
+P[48]: Reviewer comment: Potential look-ahead due to unclear signal and execution timing.
+P[49]: Response: Accepted. We clarified and implemented a deployable timing protocol.
+P[50]: Changes made:
+P[51]: Signal computed after close at day t.
+P[52]: Entry at open[t+1], exit at close[t+21].
+P[53]: At most one concurrent position (no pyramiding).
+P[54]: Location in revised manuscript:
+P[55]: Revised manuscript: Section 5.3 (signal timing, execution protocol, and trading-evaluation assumptions).
+P[56]: Revised manuscript: Section 5.3 (trading interpretation), transaction-cost sensitivity table, and associated trading-performance figure.
+P[57]: R1.6 Regime-local baseline and class metrics
+P[58]: Reviewer comment: Need within-regime majority baseline, precision, recall, and F1.
+P[59]: Response: Accepted. We report class-stratified metrics by regime and interpret them conservatively under sparse High-VIX support.
+P[60]: Location in revised manuscript:
+P[61]: Revised manuscript: Section 5.2 (regime-conditioned performance) and corresponding regime-stratified metrics table.
+P[62]: Revised manuscript: Section 6.3 (dependence-aware statistical testing) and corresponding statistical-test table.
+P[63]: R1.7 Reproducibility details and DOI errors
+P[64]: Reviewer comment: Missing final hyperparameters/CV-OOF details and incorrect reference metadata.
+P[65]: Response: Accepted. We documented model/CV details and completed reference DOI/citation cleanup in the revised manuscript.
+P[66]: Location in revised manuscript:
+P[67]: Revised manuscript: Methods section (model specification and training protocol) and hyperparameter reporting table.
+P[68]: Revised manuscript: corresponding Methods/Results subsection and cited table/figure.
+P[69]: Revised manuscript: updated References section and revised literature-positioning paragraphs (Related Work).
+P[70]: Reviewer 2
+P[71]: R2.1 Threshold look-ahead bias
+P[72]: Reviewer comment: Regime threshold used contemporaneous test information.
+P[73]: Response: Addressed identically to R1.1 with pre-test threshold calibration.
+P[74]: Location in revised manuscript:
+P[75]: Revised manuscript: Section 3.4 (regime definition and threshold calibration), Section 6.3 (threshold sensitivity), and the threshold-comparison table.
+P[76]: Revised manuscript: Section 6.3 (threshold sensitivity analysis) and the threshold-comparison table.
+P[77]: R2.2 Temporal concentration and dependence
+P[78]: Reviewer comment: Clustered High-VIX observations limit independent and identically distributed (i.i.d.) inference and generalizability.
+P[79]: Response: Addressed through dependence-aware inference and walk-forward analysis.
+P[80]: Location in revised manuscript:
+P[81]: Revised manuscript: Section 6.3 (dependence-aware inference), corresponding statistical-test table, and Fig. 9.
+P[82]: Revised manuscript: Section 6.4 (walk-forward/generalizability discussion) and corresponding walk-forward results table/figure.
+P[83]: R2.3 Simpler baseline comparisons missing
+P[84]: Reviewer comment: Need benchmark vs majority/persistence/logistic-type baselines under same filter.
+P[85]: Response: Accepted. We added regime-matched baseline benchmarking.
+P[86]: Location in revised manuscript:
+P[87]: Revised manuscript: Results section baseline-comparison subsection and corresponding baseline-comparison table/figure.
+P[88]: Revised manuscript: baseline-comparison figure in the Results section.
+P[89]: R2.4 Sharpe calculation conventions not stated
+P[90]: Reviewer comment: Risk-free rate and annualization needed explicit reporting.
+P[91]: Response: Accepted. Conventions are now explicitly defined and used consistently.
+P[92]: Location in revised manuscript:
+P[93]: Revised manuscript: Section 5.3 (signal timing, execution protocol, and trading-evaluation assumptions).
+P[94]: Revised manuscript: Section 5.3 (trading interpretation), transaction-cost sensitivity table, and associated trading-performance figure.
+P[95]: R2.5 SHAP evidence missing
+P[96]: Reviewer comment: Feature-level regime explanations needed quantitative SHAP evidence.
+P[97]: Response: Accepted. We provide regime-specific SHAP rankings and figures.
+P[98]: Location in revised manuscript:
+P[99]: Revised manuscript: explainability subsection with regime-specific SHAP ranking table/figure (High-VIX).
+P[100]: Revised manuscript: explainability subsection with regime-specific SHAP ranking table/figure (Low-VIX).
+P[101]: Revised manuscript: explainability subsection with overall SHAP ranking summary.
+P[102]: Revised manuscript: SHAP regime-comparison figure in the Results/explainability section.
+P[103]: R2.6 Feature reproducibility and literature strengthening
+P[104]: Reviewer comment: Need exact feature formulas/parameters and stronger recent literature grounding.
+P[105]: Response: Accepted. We provided full feature specifications and updated literature citations in manuscript text and references.
+P[106]: Location in revised manuscript:
+P[107]: Revised manuscript: Section 3.2 (feature engineering specification and leakage-safe construction details).
+P[108]: Revised manuscript: integrated results tables cited across Sections 5 and 6.
+P[109]: Revised manuscript: updated References section and revised literature-positioning paragraphs (Related Work).
+P[110]: Reviewer 3
+P[111]: R3.1 Split-boundary label leakage
+P[112]: Reviewer comment: Final horizon rows near split boundaries can leak future split labels.
+P[113]: Response: Accepted. We trimmed boundary-contaminated rows and rebuilt splits.
+P[114]: Location in revised manuscript:
+P[115]: Revised manuscript: Section 3.1 (chronological split design and boundary-leakage correction) and split-summary table.
+P[116]: Revised manuscript: Section 3.1 (sample construction and chronology) and split-cleaning description.
+P[117]: R3.2 Threshold look-ahead bias
+P[118]: Reviewer comment: Full-test threshold is not deployable in real time.
+P[119]: Response: Addressed identically to R1.1/R2.1.
+P[120]: Location in revised manuscript:
+P[121]: Revised manuscript: Section 3.4 (regime definition and threshold calibration), Section 6.3 (threshold sensitivity), and the threshold-comparison table.
+P[122]: R3.3 Overlap/clustering-aware statistics
+P[123]: Reviewer comment: Statistical testing must account for overlapping outcomes and clustered episodes.
+P[124]: Response: Addressed with dependence-aware testing framework.
+P[125]: Location in revised manuscript:
+P[126]: Revised manuscript: Section 6.3 (dependence-aware inference), corresponding statistical-test table, and Fig. 9.
+P[127]: Revised manuscript: Section 6.3 (dependence-aware statistical testing) and corresponding statistical-test table.
+P[128]: R3.4 Ablation and transparency of model components
+P[129]: Reviewer comment: Need component-level and no-attention ablation; clarify parameterization.
+P[130]: Response: Accepted. We added full ablation grid and transparent model parameter reporting.
+P[131]: Location in revised manuscript:
+P[132]: Revised manuscript: ablation subsection in Results and corresponding ablation table.
+P[133]: Revised manuscript: ablation-comparison figure in Results.
+P[134]: Revised manuscript: Methods section (model specification and training protocol) and hyperparameter reporting table.
+P[135]: R3.5 Literature recency and citation quality
+P[136]: Reviewer comment: References should be modernized and citation metadata corrected.
+P[137]: Response: Accepted. We updated literature positioning with recent additions and corrected problematic DOI/citation entries.
+P[138]: Location in revised manuscript:
+P[139]: Revised manuscript: updated References section and revised literature-positioning paragraphs (Related Work).
+P[140]: R3.6 Regime-specific baselines and target-realization clarity
+P[141]: Reviewer comment: Need explicit regime-local baselines and clear target realization/execution timing.
+P[142]: Response: Accepted. We report regime-local baselines and explicitly define prediction-to-execution timeline.
+P[143]: Location in revised manuscript:
+P[144]: Revised manuscript: Section 5.2 (regime-conditioned performance) and corresponding regime-stratified metrics table.
+P[145]: Revised manuscript: Results section baseline-comparison subsection and corresponding baseline-comparison table/figure.
+P[146]: Revised manuscript: Section 5.3 (signal timing, execution protocol, and trading-evaluation assumptions).
+P[147]: Summary of Revision Impact
+P[148]: Leakage and look-ahead pathways have been removed and documented.
+P[149]: Inference has been upgraded to dependence-aware procedures.
+P[150]: Generalizability claims have been revised conservatively based on walk-forward outcomes.
+P[151]: Trading-interpretation claims are now aligned with corrected cost-sensitive results.
+P[152]: Baselines, SHAP, ablation, and reproducibility artifacts are fully reported.
+P[153]: We thank the Reviewers again for the constructive guidance, which has substantially improved the rigor and transparency of the manuscript.
+P[154]: Sincerely,
+P[155]: Authors
+
+
+=== TABLES ===

@@ -1,0 +1,17 @@
+Feature,Formula/Params,Leakage-safe
+MACD,"EMA(12) - EMA(26); EMAs use exponential weighting, adjust=False",Yes
+MACD Signal,EMA(9) of MACD,Yes
+MACD Histogram,MACD - MACD Signal,Yes
+EMA-20,"Exponential MA, span=20, adjust=False",Yes
+RSI-14,100 - 100/(1+AvgGain/AvgLoss); Wilder smoothing (com=13),Yes
+Stoch %K,100*(Close-Low14)/(High14-Low14); 14-day lookback,Yes
+Stoch %D,3-day SMA of %K,Yes
+ROC-10,(Close/Close[t-10] - 1) * 100; 10-day rate of change,Yes
+BB Upper,"SMA(20) + 2*std(20); simple MA, 20-day window",Yes
+BB Lower,SMA(20) - 2*std(20),Yes
+BB Width,(BB_Upper - BB_Lower) / SMA(20),Yes
+ATR-14,"Wilder EMA(com=13) of True Range; TR=max(H-L, |H-C[t-1]|, |L-C[t-1]|)",Yes
+Log Ret Lag 1,log(Close[t] / Close[t-1]),Yes
+Log Ret Lag 2,log(Close[t] / Close[t-2]),Yes
+Log Ret Lag 3,log(Close[t] / Close[t-3]),Yes
+Log Ret Lag 5,log(Close[t] / Close[t-5]),Yes

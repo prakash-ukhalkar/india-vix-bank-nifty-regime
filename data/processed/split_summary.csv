@@ -1,0 +1,4 @@
+Split,Start,End (clean),Rows,Up% (21d),Note
+Train,2016-05-23,2023-09-11,1794,62.0%,Last 21 days of boundary removed
+Val,2023-10-20,2024-12-04,273,64.8%,Last 21 days of boundary removed
+Test,2025-01-14,2026-02-25,276,68.8%,NaN-label rows excluded

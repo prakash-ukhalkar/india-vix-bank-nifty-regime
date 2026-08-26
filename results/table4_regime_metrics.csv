@@ -1,0 +1,9 @@
+Metric,High-VIX,Low-VIX
+N,8,248
+Up% (local),100.0%,70.2%
+Majority-class baseline (%),100.0%,70.2%
+Accuracy (%),100.0%,66.5%
+Precision (%),100.0%,69.4%
+Recall (%),100.0%,93.7%
+F1 (%),100.0%,79.7%
+ROC-AUC,nan,0.5838
