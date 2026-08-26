@@ -1,119 +1,35 @@
-# =============================================================================
-# Bank Nifty Directional Prediction — Multi-Channel Sentiment Analysis
-# Full requirements for all 4 pipelines (P1–P4)
-# Python 3.10.x | Tested on Windows 10/11 + Google Colab T4
-# =============================================================================
-# Install:  pip install -r requirements.txt
-# GPU note: For FinBERT inference (NB-P3-03, NB-P4-04) use Google Colab T4.
-#           To build PyTorch with CUDA locally instead:
-#           pip install torch==2.1.2+cu118 -f https://download.pytorch.org/whl/torch_stable.html
-# =============================================================================
+# Requirements for the India VIX regime-filter research pipeline (notebooks/NB-R01–NB-R13).
+# Install: pip install -r requirements.txt
+# Python 3.10+ recommended.
 
-# ── Core Data & Numerics ─────────────────────────────────────────────────────
-numpy==1.26.4
-pandas==2.1.4
-scipy==1.12.0
-statsmodels==0.14.1
+# --- Core data & numerics ---
+numpy>=1.26
+pandas>=2.1
+scipy>=1.12
+statsmodels>=0.14
 
-# ── Market Data ──────────────────────────────────────────────────────────────
-# pandas-datareader removed — yfinance is the sole market data source
-yfinance==0.2.54
+# --- Machine learning ---
+scikit-learn>=1.4
+xgboost>=2.0
+lightgbm>=4.3
+catboost>=1.2
+torch>=2.1
+optuna>=3.5
+shap>=0.44
 
-# ── Technical Indicators ─────────────────────────────────────────────────────
-# pandas-ta has been removed from both PyPI and GitHub (repo deleted).
-# ta covers all required indicators: RSI, MACD, BB, ATR, Stochastic, OBV, etc.
-ta==0.11.0
+# --- Volatility modelling ---
+arch>=6.3
 
-# ── Machine Learning — Classical ─────────────────────────────────────────────
-scikit-learn==1.4.2
-xgboost==2.0.3
-lightgbm==4.3.0
-catboost==1.2.3
+# --- Plotting ---
+matplotlib>=3.8
+seaborn>=0.13
 
-# ── Machine Learning — Deep Learning (CPU default for local Windows) ──────────
-# torchvision and torchaudio removed — no image/audio processing in this project
-torch==2.1.2
+# --- I/O and utilities ---
+joblib>=1.3
+pyarrow>=15.0
 
-# ── Transformers / NLP ───────────────────────────────────────────────────────
-# Used for FinBERT scoring (ProsusAI/finbert) in P3 & P4
-transformers==4.38.2
-tokenizers==0.15.2
-sentencepiece==0.1.99
-huggingface-hub==0.21.4
-accelerate==0.27.2
-
-# ── VADER Sentiment ──────────────────────────────────────────────────────────
-nltk==3.8.1
-vaderSentiment==3.3.2
-
-# ── Hyperparameter Optimisation ──────────────────────────────────────────────
-# optuna-integration provides LightGBM pruning callbacks and sklearn integration
-optuna==3.5.0
-optuna-integration==3.5.0
-
-# ── Explainability ───────────────────────────────────────────────────────────
-# lime removed — only SHAP is used (src/explain/shap_utils.py)
-shap==0.44.1
-
-# ── Time-Series — Temporal Fusion Transformer (Pipeline 4 only) ──────────────
-pytorch-forecasting==1.0.0
-pytorch-lightning==2.1.4
-
-# ── Statistical Tests ────────────────────────────────────────────────────────
-# scipy  → McNemar, Wilcoxon, bootstrap CI
-# statsmodels → Diebold-Mariano, KPSS, ADF
-# pingouin → paired tests, effect sizes
-pingouin==0.5.4
-
-# ── Google Cloud / GDELT 2.0 (BigQuery) ──────────────────────────────────────
-google-cloud-bigquery==3.17.2
-google-cloud-bigquery-storage==2.24.0
-pandas-gbq==0.22.0
-pyarrow==15.0.2
-db-dtypes==1.2.0
-
-# ── Web Scraping — Pipeline 4 article body (src/data/scraper.py) ─────────────
-# fake-useragent removed — not in scraper spec; tenacity handles retries
-requests==2.31.0
-beautifulsoup4==4.12.3
-lxml==5.1.0
-urllib3==2.2.1
-tenacity==8.2.3
-
-# ── Visualisation ────────────────────────────────────────────────────────────
-matplotlib==3.8.3
-seaborn==0.13.2
-plotly==5.19.0
-kaleido==0.2.1
-
-# ── Streamlit Dashboard ──────────────────────────────────────────────────────
-# st-aggrid and watchdog removed — not in streamlit_app/ spec
-streamlit==1.32.2
-streamlit-option-menu==0.3.12
-
-# ── Notebook / Dev Tools ─────────────────────────────────────────────────────
-jupyter==1.0.0
-jupyterlab==4.1.3
-ipykernel==6.29.3
-ipywidgets==8.1.2
-nbformat==5.9.2
-nbconvert==7.16.1
-tqdm==4.66.2
-
-# ── Logging / Config ─────────────────────────────────────────────────────────
-pyyaml==6.0.1
-python-dotenv==1.0.1
-loguru==0.7.2
-rich==13.7.1
-
-# ── File I/O ─────────────────────────────────────────────────────────────────
-openpyxl==3.1.2
-fastparquet==2024.2.0
-joblib==1.3.2
-
-# ── Testing ──────────────────────────────────────────────────────────────────
-pytest==8.1.1
-pytest-cov==5.0.0
-
-# ── Experiment Tracking ──────────────────────────────────────────────────────
-mlflow==2.11.1
+# --- Notebook environment ---
+jupyter>=1.0
+jupyterlab>=4.1
+ipykernel>=6.29
+nbformat>=5.9
