@@ -1,0 +1,426 @@
+--- cell 1 ---
+import pandas as pd
+import numpy as np
+import json
+import joblib
+import warnings
+warnings.filterwarnings('ignore')
+from pathlib import Path
+from sklearn.model_selection import TimeSeriesSplit
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score, accuracy_score, log_loss
+import optuna
+optuna.logging.set_verbosity(optuna.logging.WARNING)
+
+import xgboost as xgb
+import lightgbm as lgb
+from sklearn.ensemble import RandomForestClassifier
+from catboost import CatBoostClassifier
+
+PROJ   = Path(r'F:\MLSAPU\PhD-SPPU\India-VIX-Major-Revision')
+PROC   = PROJ / 'data' / 'processed'
+MODELS = PROJ / 'models'
+RESULTS = PROJ / 'results'
+MODELS.mkdir(exist_ok=True)
+
+with open(PROC / 'feature_cols.json') as f:
+    FEATURE_COLS = json.load(f)
+
+TARGET = 'dir_21d'
+N_FOLDS = 5
+OPTUNA_TRIALS = 50   # Reduce to 50 for speed; increase to 100 for final run
+RANDOM_SEED = 42
+
+train = pd.read_csv(PROC / 'train.csv', parse_dates=['date'])
+val   = pd.read_csv(PROC / 'val.csv',   parse_dates=['date'])
+test  = pd.read_csv(PROC / 'test_with_regimes.csv', parse_dates=['date'])
+
+X_train = train[FEATURE_COLS].values
+y_train = train[TARGET].values
+X_val   = val[FEATURE_COLS].values
+y_val   = val[TARGET].values
+X_test  = test[FEATURE_COLS].values
+y_test  = test[TARGET].values
+
+print(f'Train: {X_train.shape}, Val: {X_val.shape}, Test: {X_test.shape}')
+print(f'Features: {len(FEATURE_COLS)}')
+
+--- cell 3 ---
+tscv = TimeSeriesSplit(n_splits=N_FOLDS)
+
+print(f'OOF CV Structure: TimeSeriesSplit(n_splits={N_FOLDS})')
+print('Fold sizes (train / val):')
+for i, (tr_idx, va_idx) in enumerate(tscv.split(X_train)):
+    print(f'  Fold {i+1}: train={len(tr_idx)}, val={len(va_idx)} | '
+          f'val dates: {train.date.iloc[va_idx[0]].date()} -> {train.date.iloc[va_idx[-1]].date()}')
+
+--- cell 5 ---
+def xgb_objective(trial):
+    params = {
+        'n_estimators':     trial.suggest_int('n_estimators', 100, 500),
+        'max_depth':        trial.suggest_int('max_depth', 3, 8),
+        'learning_rate':    trial.suggest_float('learning_rate', 0.01, 0.3, log=True),
+        'subsample':        trial.suggest_float('subsample', 0.5, 1.0),
+        'colsample_bytree': trial.suggest_float('colsample_bytree', 0.5, 1.0),
+        'reg_alpha':        trial.suggest_float('reg_alpha', 1e-4, 10.0, log=True),
+        'reg_lambda':       trial.suggest_float('reg_lambda', 1e-4, 10.0, log=True),
+        'use_label_encoder': False,
+        'eval_metric': 'logloss',
+        'random_state': RANDOM_SEED,
+        'n_jobs': -1
+    }
+    scores = []
+    for tr_idx, va_idx in tscv.split(X_train):
+        m = xgb.XGBClassifier(**params)
+        m.fit(X_train[tr_idx], y_train[tr_idx], verbose=False)
+        p = m.predict_proba(X_train[va_idx])[:, 1]
+        scores.append(log_loss(y_train[va_idx], p))
+    return np.mean(scores)
+
+study_xgb = optuna.create_study(direction='minimize', sampler=optuna.samplers.TPESampler(seed=RANDOM_SEED))
+study_xgb.optimize(xgb_objective, n_trials=OPTUNA_TRIALS, show_progress_bar=False)
+
+best_xgb_params = study_xgb.best_params
+best_xgb_params.update({'use_label_encoder': False, 'eval_metric': 'logloss',
+                         'random_state': RANDOM_SEED, 'n_jobs': -1})
+print('Best XGB params:', best_xgb_params)
+print(f'Best XGB log-loss: {study_xgb.best_value:.4f}')
+
+--- cell 7 ---
+def lgb_objective(trial):
+    params = {
+        'n_estimators':     trial.suggest_int('n_estimators', 100, 500),
+        'max_depth':        trial.suggest_int('max_depth', 3, 8),
+        'learning_rate':    trial.suggest_float('learning_rate', 0.01, 0.3, log=True),
+        'num_leaves':       trial.suggest_int('num_leaves', 15, 127),
+        'subsample':        trial.suggest_float('subsample', 0.5, 1.0),
+        'colsample_bytree': trial.suggest_float('colsample_bytree', 0.5, 1.0),
+        'reg_alpha':        trial.suggest_float('reg_alpha', 1e-4, 10.0, log=True),
+        'reg_lambda':       trial.suggest_float('reg_lambda', 1e-4, 10.0, log=True),
+        'random_state': RANDOM_SEED, 'n_jobs': -1, 'verbose': -1
+    }
+    scores = []
+    for tr_idx, va_idx in tscv.split(X_train):
+        m = lgb.LGBMClassifier(**params)
+        m.fit(X_train[tr_idx], y_train[tr_idx])
+        p = m.predict_proba(X_train[va_idx])[:, 1]
+        scores.append(log_loss(y_train[va_idx], p))
+    return np.mean(scores)
+
+study_lgb = optuna.create_study(direction='minimize', sampler=optuna.samplers.TPESampler(seed=RANDOM_SEED))
+study_lgb.optimize(lgb_objective, n_trials=OPTUNA_TRIALS, show_progress_bar=False)
+
+best_lgb_params = study_lgb.best_params
+best_lgb_params.update({'random_state': RANDOM_SEED, 'n_jobs': -1, 'verbose': -1})
+print('Best LGB params:', best_lgb_params)
+
+--- cell 9 ---
+def rf_objective(trial):
+    params = {
+        'n_estimators':  trial.suggest_int('n_estimators', 100, 400),
+        'max_depth':     trial.suggest_int('max_depth', 3, 15),
+        'min_samples_split': trial.suggest_int('min_samples_split', 2, 20),
+        'min_samples_leaf':  trial.suggest_int('min_samples_leaf', 1, 10),
+        'max_features':  trial.suggest_categorical('max_features', ['sqrt', 'log2']),
+        'random_state': RANDOM_SEED, 'n_jobs': -1
+    }
+    scores = []
+    for tr_idx, va_idx in tscv.split(X_train):
+        m = RandomForestClassifier(**params)
+        m.fit(X_train[tr_idx], y_train[tr_idx])
+        p = m.predict_proba(X_train[va_idx])[:, 1]
+        scores.append(log_loss(y_train[va_idx], p))
+    return np.mean(scores)
+
+study_rf = optuna.create_study(direction='minimize', sampler=optuna.samplers.TPESampler(seed=RANDOM_SEED))
+study_rf.optimize(rf_objective, n_trials=OPTUNA_TRIALS, show_progress_bar=False)
+
+best_rf_params = study_rf.best_params
+best_rf_params.update({'random_state': RANDOM_SEED, 'n_jobs': -1})
+print('Best RF params:', best_rf_params)
+
+--- cell 11 ---
+def cb_objective(trial):
+    params = {
+        'iterations':       trial.suggest_int('iterations', 100, 500),
+        'depth':            trial.suggest_int('depth', 3, 8),
+        'learning_rate':    trial.suggest_float('learning_rate', 0.01, 0.3, log=True),
+        'l2_leaf_reg':      trial.suggest_float('l2_leaf_reg', 1e-4, 10.0, log=True),
+        'bagging_temperature': trial.suggest_float('bagging_temperature', 0.0, 1.0),
+        'random_seed': RANDOM_SEED, 'verbose': 0, 'allow_writing_files': False
+    }
+    scores = []
+    for tr_idx, va_idx in tscv.split(X_train):
+        m = CatBoostClassifier(**params)
+        m.fit(X_train[tr_idx], y_train[tr_idx])
+        p = m.predict_proba(X_train[va_idx])[:, 1]
+        scores.append(log_loss(y_train[va_idx], p))
+    return np.mean(scores)
+
+study_cb = optuna.create_study(direction='minimize', sampler=optuna.samplers.TPESampler(seed=RANDOM_SEED))
+study_cb.optimize(cb_objective, n_trials=OPTUNA_TRIALS, show_progress_bar=False)
+
+best_cb_params = study_cb.best_params
+best_cb_params.update({'random_seed': RANDOM_SEED, 'verbose': 0, 'allow_writing_files': False})
+print('Best CB params:', best_cb_params)
+
+--- cell 13 ---
+# Train on full training set
+xgb_model = xgb.XGBClassifier(**best_xgb_params)
+xgb_model.fit(X_train, y_train, verbose=False)
+
+lgb_model = lgb.LGBMClassifier(**best_lgb_params)
+lgb_model.fit(X_train, y_train)
+
+rf_model = RandomForestClassifier(**best_rf_params)
+rf_model.fit(X_train, y_train)
+
+cb_model = CatBoostClassifier(**best_cb_params)
+cb_model.fit(X_train, y_train)
+
+print('All 4 tree-based models trained on full training set.')
+
+# Save models
+for name, model in [('xgb', xgb_model), ('lgb', lgb_model), ('rf', rf_model), ('cb', cb_model)]:
+    joblib.dump(model, MODELS / f'{name}_model.joblib')
+    print(f'  Saved: {name}_model.joblib')
+
+--- cell 15 ---
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader, TensorDataset
+
+SEQ_LEN     = 20
+HIDDEN_SIZE = 64
+DROPOUT     = 0.2
+MAX_EPOCHS  = 50
+PATIENCE    = 8
+BATCH_SIZE  = 64
+LR          = 1e-3
+
+class SelfAttention(nn.Module):
+    def __init__(self, hidden_size):
+        super().__init__()
+        self.attn = nn.Linear(hidden_size * 2, 1)  # *2 for BiLSTM
+    def forward(self, x):  # x: (batch, seq, hidden*2)
+        scores = self.attn(x).squeeze(-1)           # (batch, seq)
+        weights = torch.softmax(scores, dim=1).unsqueeze(-1)  # (batch, seq, 1)
+        return (x * weights).sum(dim=1)             # (batch, hidden*2)
+
+class BiLSTMClassifier(nn.Module):
+    def __init__(self, input_size, hidden_size, dropout):
+        super().__init__()
+        self.lstm    = nn.LSTM(input_size, hidden_size, batch_first=True,
+                               bidirectional=True, dropout=dropout if MAX_EPOCHS > 1 else 0)
+        self.attn    = SelfAttention(hidden_size)
+        self.dropout = nn.Dropout(dropout)
+        self.fc      = nn.Linear(hidden_size * 2, 1)
+
+    def forward(self, x):
+        out, _ = self.lstm(x)
+        ctx    = self.attn(out)
+        ctx    = self.dropout(ctx)
+        return self.fc(ctx).squeeze(-1)
+
+def make_sequences(X, y, seq_len):
+    """Create sliding-window sequences. No cross-split leakage (caller ensures X is from one split)."""
+    Xs, ys = [], []
+    for i in range(seq_len, len(X)):
+        Xs.append(X[i-seq_len:i])
+        ys.append(y[i])
+    return np.array(Xs), np.array(ys)
+
+Xtr_seq, ytr_seq = make_sequences(X_train, y_train, SEQ_LEN)
+Xva_seq, yva_seq = make_sequences(X_val,   y_val,   SEQ_LEN)
+
+# Note on sequence overlap at boundaries:
+# The first SEQ_LEN rows of each split are consumed as lookback; they produce no label.
+# Because we use CLEAN splits (NB-R01 removed leaky boundary rows), no val-period
+# prices appear in training sequences.
+
+print(f'Training sequences: {Xtr_seq.shape}, Val sequences: {Xva_seq.shape}')
+print
+
+--- cell 16 ---
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(f'Device: {device}')
+
+torch.manual_seed(RANDOM_SEED)
+bilstm = BiLSTMClassifier(len(FEATURE_COLS), HIDDEN_SIZE, DROPOUT).to(device)
+opt    = torch.optim.Adam(bilstm.parameters(), lr=LR)
+loss_fn = nn.BCEWithLogitsLoss()
+
+tr_ds = TensorDataset(torch.tensor(Xtr_seq, dtype=torch.float32),
+                       torch.tensor(ytr_seq, dtype=torch.float32))
+va_ds = TensorDataset(torch.tensor(Xva_seq, dtype=torch.float32),
+                       torch.tensor(yva_seq, dtype=torch.float32))
+tr_loader = DataLoader(tr_ds, batch_size=BATCH_SIZE, shuffle=False)
+va_loader = DataLoader(va_ds, batch_size=BATCH_SIZE, shuffle=False)
+
+best_val_loss = float('inf')
+patience_cnt  = 0
+train_losses, val_losses = [], []
+
+for epoch in range(MAX_EPOCHS):
+    bilstm.train()
+    tl = []
+    for Xb, yb in tr_loader:
+        Xb, yb = Xb.to(device), yb.to(device)
+        opt.zero_grad()
+        loss = loss_fn(bilstm(Xb), yb)
+        loss.backward(); opt.step()
+        tl.append(loss.item())
+
+    bilstm.eval()
+    vl = []
+    with torch.no_grad():
+        for Xb, yb in va_loader:
+            Xb, yb = Xb.to(device), yb.to(device)
+            vl.append(loss_fn(bilstm(Xb), yb).item())
+
+    val_loss = np.mean(vl)
+    train_losses.append(np.mean(tl))
+    val_losses.append(val_loss)
+
+    if val_loss < best_val_loss:
+        best_val_loss = val_loss
+        patience_cnt  = 0
+        torch.save(bilstm.state_dict(), MODELS / 'bilstm_best.pt')
+    else:
+        patience_cnt += 1
+        if patience_cnt >= PATIENCE:
+            print(f'Early stopping at epoch {epoch+1}')
+            break
+
+    if (epoch + 1) % 10 == 0:
+        print(f'Epoch {epoch+1:3d} | train_loss={np.mean(tl):.4f} | val_loss={val_loss:.4f}')
+
+bilstm.load_state_dict(torch.load(MODELS / 'bilstm_best.pt', map_location=device))
+print(f'Best val loss: {best_val_loss:.4f}')
+
+--- cell 18 ---
+def get_oof_probs(model_class, params, X, y, tscv):
+    oof_probs = np.zeros(len(y))
+    for tr_idx, va_idx in tscv.split(X):
+        m = model_class(**params)
+        m.fit(X[tr_idx], y[tr_idx])
+        oof_probs[va_idx] = m.predict_proba(X[va_idx])[:, 1]
+    return oof_probs
+
+print('Generating OOF probabilities for meta-learner training...')
+oof_xgb = get_oof_probs(xgb.XGBClassifier, best_xgb_params, X_train, y_train, tscv)
+oof_lgb = get_oof_probs(lgb.LGBMClassifier, best_lgb_params, X_train, y_train, tscv)
+oof_rf  = get_oof_probs(RandomForestClassifier, best_rf_params, X_train, y_train, tscv)
+oof_cb  = get_oof_probs(CatBoostClassifier, best_cb_params, X_train, y_train, tscv)
+print('Tree OOF done.')
+
+# BiLSTM OOF (simplified: use val set preds as OOF proxy for meta-learner)
+bilstm.eval()
+Xva_t = torch.tensor(Xva_seq, dtype=torch.float32).to(device)
+with torch.no_grad():
+    bilstm_val_probs = torch.sigmoid(bilstm(Xva_t)).cpu().numpy()
+
+print(f'BiLSTM val probs shape: {bilstm_val_probs.shape}')
+
+--- cell 19 ---
+# Stack OOF probs (using val set for meta-learner — this is the final fold)
+# OOF probs on train are used to fit meta-learner
+# Val probs are used to verify meta-learner before test evaluation
+
+# Get val predictions from all tree models
+val_xgb = xgb_model.predict_proba(X_val)[:, 1]
+val_lgb = lgb_model.predict_proba(X_val)[:, 1]
+val_rf  = rf_model.predict_proba(X_val)[:, 1]
+val_cb  = cb_model.predict_proba(X_val)[:, 1]
+
+# BiLSTM val probs (seq_len offset applies: first SEQ_LEN val rows have no prediction)
+# Align by using only the last len(bilstm_val_probs) rows
+val_aligned = val[-len(bilstm_val_probs):]
+val_xgb_a = val_xgb[-len(bilstm_val_probs):]
+val_lgb_a = val_lgb[-len(bilstm_val_probs):]
+val_rf_a  = val_rf[-len(bilstm_val_probs):]
+val_cb_a  = val_cb[-len(bilstm_val_probs):]
+y_val_a   = y_val[-len(bilstm_val_probs):]
+
+# Meta-learner input: stack of 5 base probabilities
+meta_X_val = np.column_stack([val_xgb_a, val_lgb_a, val_rf_a, val_cb_a, bilstm_val_probs])
+
+# Train Ridge Logistic Regression meta-learner on val
+meta = LogisticRegression(C=1.0, max_iter=1000, random_state=RANDOM_SEED)
+meta.fit(meta_X_val, y_val_a)
+joblib.dump(meta, MODELS / 'meta_learner.joblib')
+
+print('Meta-learner (Ridge LogReg) trained on val stacked probs.')
+print(f'Meta coefficients: XGB={meta.coef_[0][0]:.3f}, LGB={meta.coef_[0][1]:.3f}, '
+      f'RF={meta.coef_[0][2]:.3f}, CB={meta.coef_[0][3]:.3f}, BiLSTM={meta.coef_[0][4]:.3f}')
+
+--- cell 21 ---
+# Tree model test predictions
+test_xgb = xgb_model.predict_proba(X_test)[:, 1]
+test_lgb = lgb_model.predict_proba(X_test)[:, 1]
+test_rf  = rf_model.predict_proba(X_test)[:, 1]
+test_cb  = cb_model.predict_proba(X_test)[:, 1]
+
+# BiLSTM test predictions
+Xte_seq, yte_seq = make_sequences(X_test, y_test, SEQ_LEN)
+bilstm.eval()
+Xte_t = torch.tensor(Xte_seq, dtype=torch.float32).to(device)
+with torch.no_grad():
+    bilstm_test_probs = torch.sigmoid(bilstm(Xte_t)).cpu().numpy()
+
+# Align test predictions (BiLSTM offset)
+test_aligned = test.iloc[-len(bilstm_test_probs):].copy()
+test_xgb_a   = test_xgb[-len(bilstm_test_probs):]
+test_lgb_a   = test_lgb[-len(bilstm_test_probs):]
+test_rf_a    = test_rf[-len(bilstm_test_probs):]
+test_cb_a    = test_cb[-len(bilstm_test_probs):]
+y_test_a     = yte_seq
+
+meta_X_test = np.column_stack([test_xgb_a, test_lgb_a, test_rf_a, test_cb_a, bilstm_test_probs])
+stack_probs = meta.predict_proba(meta_X_test)[:, 1]
+stack_preds = (stack_probs >= 0.5).astype(int)
+
+test_aligned['stack_prob']  = stack_probs
+test_aligned['stack_pred']  = stack_preds
+test_aligned['bilstm_prob'] = bilstm_test_probs
+test_aligned['xgb_prob']    = test_xgb_a
+test_aligned['lgb_prob']    = test_lgb_a
+test_aligned['rf_prob']     = test_rf_a
+test_aligned['cb_prob']     = test_cb_a
+
+overall_acc = accuracy_score(y_test_a, stack_preds)
+overall_auc = roc_auc_score(y_test_a, stack_probs)
+print(f'\nOverall test accuracy:  {overall_acc:.4f} ({overall_acc*100:.1f}%)')
+print(f'Overall test ROC-AUC:   {overall_auc:.4f}')
+
+test_aligned.to_csv(PROC / 'test_predictions.csv', index=False)
+print('Test predictions saved.')
+
+--- cell 23 ---
+hp_table = [
+    {'Model': 'XGBoost',       'Key Parameters': str({k:v for k,v in best_xgb_params.items() if k not in ['use_label_encoder','eval_metric','random_state','n_jobs']}),       'CV Loss': f"{study_xgb.best_value:.4f}"},
+    {'Model': 'LightGBM',      'Key Parameters': str({k:v for k,v in best_lgb_params.items() if k not in ['random_state','n_jobs','verbose']}),    'CV Loss': f"{study_lgb.best_value:.4f}"},
+    {'Model': 'Random Forest',  'Key Parameters': str({k:v for k,v in best_rf_params.items() if k not in ['random_state','n_jobs']}),     'CV Loss': f"{study_rf.best_value:.4f}"},
+    {'Model': 'CatBoost',      'Key Parameters': str({k:v for k,v in best_cb_params.items() if k not in ['random_seed','verbose','allow_writing_files']}), 'CV Loss': f"{study_cb.best_value:.4f}"},
+    {'Model': 'BiLSTM+Attn',   'Key Parameters': f'hidden={HIDDEN_SIZE}, seq_len={SEQ_LEN}, dropout={DROPOUT}, lr={LR}, batch={BATCH_SIZE}, patience={PATIENCE}', 'CV Loss': f'{best_val_loss:.4f}'},
+    {'Model': 'Ridge LogReg (meta)', 'Key Parameters': 'C=1.0 (L2)', 'CV Loss': 'N/A'}
+]
+hp_df = pd.DataFrame(hp_table)
+print(hp_df.to_string(index=False))
+hp_df.to_csv(RESULTS / 'hyperparameter_table.csv', index=False)
+print('\nHyperparameter table saved.')
+
+# Also save all best params as JSON for full transparency
+all_params = {
+    'xgb':  best_xgb_params,
+    'lgb':  best_lgb_params,
+    'rf':   best_rf_params,
+    'cb':   best_cb_params,
+    'bilstm': {'hidden_size': HIDDEN_SIZE, 'seq_len': SEQ_LEN, 'dropout': DROPOUT,
+               'lr': LR, 'batch_size': BATCH_SIZE, 'patience': PATIENCE, 'max_epochs': MAX_EPOCHS},
+    'meta': {'C': 1.0, 'max_iter': 1000}
+}
+with open(RESULTS / 'all_best_params.json', 'w') as f:
+    json.dump(all_params, f, indent=2, default=str)
+print('Full params JSON saved.')
+

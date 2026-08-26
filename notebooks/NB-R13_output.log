@@ -1,0 +1,29 @@
+Device: cpu
+
+======================================================================
+HORIZON: 1d (target=dir_1d)
+======================================================================
+  xgb best loss: 0.7029
+  lgb best loss: 0.6962
+  rf best loss: 0.7034
+  cb best loss: 0.6940
+  BiLSTM early stop epoch 23
+  BiLSTM best val loss: 0.6800
+  Overall acc=0.5508, AUC=0.5265, majority=0.5508, McNemar p=1.0000
+
+======================================================================
+HORIZON: 5d (target=dir_5d)
+======================================================================
+  xgb best loss: 0.7412
+  lgb best loss: 0.7220
+  rf best loss: 0.7517
+  cb best loss: 0.7118
+  BiLSTM early stop epoch 18
+  BiLSTM best val loss: 0.6426
+  Overall acc=0.5664, AUC=0.4894, majority=0.5664, McNemar p=1.0000
+
+
+=== FINAL SUMMARY ===
+horizon  overall_acc  overall_auc  majority_acc  mcnemar_p  hv_n  hv_acc  lv_n   lv_acc  fisher_p
+     1d     0.550781     0.526549      0.550781        1.0     8   0.625   248 0.548387  0.733750
+     5d     0.566406     0.489407      0.566406        1.0     8   1.000   248 0.552419  0.010797
