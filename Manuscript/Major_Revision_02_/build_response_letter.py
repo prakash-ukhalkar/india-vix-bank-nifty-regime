@@ -136,7 +136,20 @@ para('- New stacking ensembles trained for both horizons (XGBoost, LightGBM, Ran
      'self-attention, ridge meta-learner), using the same corrected train/validation/test splits and the same 16 '
      'leakage-safe features. Optuna trials were reduced from 100 to 25 per model for turnaround time; this is stated '
      'explicitly rather than left implicit.')
-para('[[HORIZON_RESULTS_PLACEHOLDER]]')
+para('- Results (256-row aligned sample, same regime-fixed threshold and same 8 High-VIX days as the 21-day analysis '
+     'throughout): 1-day unconditioned accuracy 55.1% (AUC 0.527, majority 55.1%, McNemar p=1.000); High-VIX 62.5% vs '
+     'Low-VIX 54.8% (Fisher p=0.734, not significant). 5-day unconditioned accuracy 56.6% (AUC 0.489, majority 56.6%, '
+     'McNemar p=1.000); High-VIX 100.0% vs Low-VIX 55.2% (uncorrected Fisher p=0.011).')
+para('- We want to flag one honest complication rather than quietly resolve it: the 5-day result was not "no effect," '
+     'as we originally expected and had drafted before running this analysis -- its uncorrected Fisher p (0.011) is '
+     'in fact smaller than the 21-day headline result\'s dependence-aware p (1.000), and survives a naive Bonferroni '
+     'correction across three horizons (p=0.032). We do not believe this supports a real 5-day effect: it rests on '
+     'the same eight High-VIX days as every other horizon in this study, has not been subjected to the block-bootstrap '
+     '/ non-overlapping-resampling protocol used for 21-day, and is exactly the kind of small-sample coincidence the '
+     'walk-forward analysis (R4, closing suggestion, below) warns against over-interpreting. We report it in Table 7 '
+     'and Figure 3 rather than omit it, and we revised the paper\'s "horizon-specific" framing (Introduction, Section '
+     '7) to state plainly that the three horizons do not cleanly separate into "one real effect, two null effects" -- '
+     'all three are better read as noisy draws from the same eight-day sample.')
 para('Location in revised manuscript: Table 5, Table 6, Section 5.1, Introduction.')
 
 h('R4.6 Sharpe conventions not stated; single-trade Sharpe questioned as a distribution statistic', bold=True)
