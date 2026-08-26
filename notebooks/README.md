@@ -29,6 +29,10 @@ Notebooks 01–10 correspond to the first major-revision round; 11–13 were add
 second round in direct response to reviewer comments (see `Manuscript/` for the full
 review correspondence).
 
+**Note on run order:** NB-R12 depends on output from NB-R13 (it loads the real
+1-day/5-day results NB-R13 produces). Despite the numbering, run NB-R13 before
+NB-R12, or before rerunning NB-R12 if NB-R13's output files are missing.
+
 ## Reproducing the pipeline
 
 1. Install dependencies from `requirements.txt`, plus `arch`, `optuna`, `catboost`,
@@ -53,9 +57,11 @@ ultimately not used).
 
 - Every notebook's markdown documents its exact inputs, outputs, and (where
   relevant) the specific reviewer concern it addresses.
-- NB-R12 has one known, explicitly documented limitation: two of its figures use
-  placeholder 1-day/5-day values that predate NB-R13's retraining. See NB-R12's
-  markdown for the exact fix needed if you rerun it after NB-R13.
+- NB-R12 depends on NB-R13's output: its regime-accuracy and AUC figures load the
+  1-day/5-day results directly from `results/horizon_1d_5d_results_CORRECTED.csv`
+  and `data/processed/test_predictions_{1d,5d}.csv` rather than using hardcoded
+  values, so run NB-R13 before NB-R12 (or before rerunning NB-R12) if those files
+  don't yet exist.
 - Optuna trial counts differ between the 21-day model (NB-R03: 100 trials/model)
   and the 1-day/5-day models (NB-R13: 25 trials/model) for compute-time reasons;
   this is stated in both notebooks and in the manuscript.
