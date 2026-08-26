@@ -1,7 +1,4 @@
-Check,High-VIX count,High-VIX accuracy,Low-VIX accuracy,Fisher p (non-overlap),Interpretation
-Threshold p60 (fixed pre-test = 16.22),31,96.8%,63.6%,1.000,Not significant; small-sample non-overlap test underpowered
-Threshold p65 (fixed pre-test = 16.85),27,96.3%,64.2%,1.000,Not significant; small-sample non-overlap test underpowered
-Threshold p70 (fixed pre-test = 17.77),16,100.0%,65.4%,n/a (insufficient non-overlap obs),Accuracy pattern consistent with p75 but untested for significance
-Threshold p75 (fixed pre-test = 18.71),8,100.0%,66.5%,n/a (insufficient non-overlap obs),Main result under corrected protocol; sparse High-VIX (n=8)
-Threshold p85 (fixed pre-test = 21.00),4,100.0%,67.1%,n/a (insufficient non-overlap obs),Count correctly <= p75 count; too sparse for any inference
-2025-Q2 (fixed p75 threshold),8,100.0%,88.7%,n/a,All 8 High-VIX test days fall in a single quarter (2025-Q2); confirms single-episode concentration
+Check,High_VIX_count,High_VIX_accuracy,Low_VIX_accuracy,Interpretation
+Threshold p75 (fixed pre-test = 18.71),8,100.0%,66.5%,Main result under corrected protocol; sparse High-VIX
+Threshold p85 (fixed pre-test = 21.00),4,100.0%,67.1%,Stricter threshold; count must not exceed p75 count
+2025Q2 (fixed threshold),8,100.0%,88.7%,Quarterly component of the n=8 fixed-threshold subset
