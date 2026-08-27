@@ -1,6 +1,6 @@
 Regime,n,Accuracy_pct,Fisher_p,Phi,Bonferroni_pass
 VIX High (>= 18.71),8,100.0,1.0,,No
-VIX Low,248,66.5,,,
+VIX Low,248,65.3,,,
 "GARCH High (>= 1.3851, pre-test p75)",10,80.0,1.0,,No
-GARCH Low,246,67.1,,,
+GARCH Low,246,65.9,,,
 VIX-High intersect GARCH-High,2,100.0,,,

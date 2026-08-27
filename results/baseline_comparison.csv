@@ -1,16 +1,16 @@
-Model,Regime,N,Majority Baseline (%),Accuracy (%),F1 (%),ROC-AUC
-Majority-Class,High-VIX,8,100.0,100.0,100.0,N/A
-Majority-Class,Low-VIX,248,70.2,70.2,82.5,0.5
-Majority-Class,Overall,256,71.1,71.1,83.1,0.5
-Persistence,High-VIX,8,100.0,37.5,54.5,N/A
-Persistence,Low-VIX,248,70.2,50.8,59.6,0.4874
-Persistence,Overall,256,71.1,50.4,59.4,0.4836
-Logistic Reg.,High-VIX,8,100.0,0.0,0.0,N/A
-Logistic Reg.,Low-VIX,248,70.2,29.8,1.1,0.6657
-Logistic Reg.,Overall,256,71.1,28.9,1.1,0.6761
-XGBoost (single),High-VIX,8,100.0,0.0,0.0,N/A
-XGBoost (single),Low-VIX,248,70.2,43.5,54.2,0.4473
-XGBoost (single),Overall,256,71.1,42.2,52.9,0.4412
-Stacking Ensemble,High-VIX,8,100.0,100.0,100.0,N/A
-Stacking Ensemble,Low-VIX,248,70.2,66.5,79.7,0.5838
-Stacking Ensemble,Overall,256,71.1,67.6,80.5,0.582
+Model,Regime,N,Majority Baseline (%),Accuracy (%),Precision (%),Recall (%),F1 (%),ROC-AUC
+Majority-Class,High-VIX,8,100.0,100.0,100.0,100.0,100.0,N/A
+Majority-Class,Low-VIX,248,70.2,70.2,70.2,100.0,82.5,0.5
+Majority-Class,Overall,256,71.1,71.1,71.1,100.0,83.1,0.5
+Persistence,High-VIX,8,100.0,37.5,100.0,37.5,54.5,N/A
+Persistence,Low-VIX,248,70.2,50.8,70.3,51.7,59.6,0.4874
+Persistence,Overall,256,71.1,50.4,71.0,51.1,59.4,0.4836
+Logistic Reg.,High-VIX,8,100.0,0.0,0.0,0.0,0.0,N/A
+Logistic Reg.,Low-VIX,248,70.2,29.8,50.0,0.6,1.1,0.6657
+Logistic Reg.,Overall,256,71.1,28.9,50.0,0.5,1.1,0.6761
+XGBoost (single),High-VIX,8,100.0,87.5,100.0,87.5,93.3,N/A
+XGBoost (single),Low-VIX,248,70.2,52.4,67.7,61.5,64.5,0.4904
+XGBoost (single),Overall,256,71.1,53.5,69.1,62.6,65.7,0.4858
+Stacking Ensemble,High-VIX,8,100.0,100.0,100.0,100.0,100.0,N/A
+Stacking Ensemble,Low-VIX,248,70.2,65.3,69.3,90.8,78.6,0.5589
+Stacking Ensemble,Overall,256,71.1,66.4,70.3,91.2,79.4,0.5544

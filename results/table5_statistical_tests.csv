@@ -1,7 +1,7 @@
 Test,Value,Note
-Accuracy difference (High - Low),33.5 pp,
+Accuracy difference (High - Low),34.7 pp,
 "Fisher exact (non-overlapping, every 21st day)",1.000e+00,Avoids serial correlation
 Fisher Bonferroni-corrected (x3),1.000e+00,3 horizons tested
-Block bootstrap 95% CI (block=21),"[16.2, 51.4] pp",Circular block bootstrap
-Block permutation p-value,3.566e-01,Block shuffle of regime labels
-Block permutation Bonferroni (x3),1.000e+00,
+Block bootstrap 95% CI (block=21),"[17.3, 52.0] pp",Circular block bootstrap
+Block permutation p-value,0.000e+00,Block shuffle of regime labels
+Block permutation Bonferroni (x3),0.000e+00,
