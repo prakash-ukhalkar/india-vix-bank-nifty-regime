@@ -1,13 +1,3 @@
-# --- Private / not part of the public research pipeline ---
-Manuscript/
-Reference_folder/
-REVISION_CONTEXT.md
-.claude/
-
-# Read-only reference copies from a sibling project, consulted for audit purposes
-# only -- not part of this pipeline and not meant for the public repo.
-notebooks/imported_reference/
-
 # --- Python / Jupyter ---
 __pycache__/
 *.py[cod]
