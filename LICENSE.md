@@ -1,6 +1,6 @@
 # MIT License
 
-Copyright (c) 2026 Prakash Ukhalkar, Ravikant Zirmite, Manasi Bhate
+Copyright (c) 2026 Prakash Ukhalkar, Dr. Ravikant Zirmite, Dr. Manasi Bhate
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
